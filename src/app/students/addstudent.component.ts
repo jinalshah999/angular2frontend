@@ -1,26 +1,30 @@
-import { Component,ChangeDetectorRef } from '@angular/core';
-
+import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
+import { Student } from './student';
+import { StudentdataService } from './studentdata.service';
+import { Router } from '@angular/router';
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'app-addstudent',
+  templateUrl: './addstudent.component.html',
+  styleUrls: ['./addstudent.component.css']
 })
-export class AppComponent {
-  title = 'app works!';
-  path='';
+export class AddstudentComponent implements OnInit {
+model = {rno:0,name:'',mobile_no:'',student_img:''};
+path='';
    public file_srcs: string[] = [];
   public debug_size_before: string[] = [];
   public debug_size_after: string[] = [];
-  constructor(private changeDetectorRef: ChangeDetectorRef){
+  constructor(private changeDetectorRef: ChangeDetectorRef,private studata:StudentdataService,public _route:Router) { }
 
+  ngOnInit() {
   }
-  
+ 
 fileChange(input){
   this.readFiles(input.files);
 }
 readFile(file, reader, callback){
   reader.onload = () => {
     callback(reader.result);
+    this.model.student_img=reader.result;
     console.log(reader.result);
   }
 
@@ -96,5 +100,20 @@ resize(img, MAX_WIDTH:number, MAX_HEIGHT:number, callback){
     // callback with the results
     callback(dataUrl, img.src.length, dataUrl.length);
   };
+}
+studentSubmit(){
+
+this.studata.addStudent(this.model).subscribe(
+  (data:any)=>{
+    this._route.navigate(['/allStudent']);
+  },
+  function(error){
+    console.log(error);
+  },
+  function(){
+    console.log("On Complete");
+  }
+
+);
 }
 }
